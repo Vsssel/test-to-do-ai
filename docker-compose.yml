@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:15
+    container_name: pg-db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+  drizzle:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: /bin/sh -c "npm install && npx drizzle-kit migrate"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://admin:admin@db:5432/appdb
+
+  docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docs-app
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/apps/docs/.next
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://admin:admin@db:5432/appdb
+      NODE_ENV: development
+
+volumes:
+  postgres_data:
