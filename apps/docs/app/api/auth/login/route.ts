@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { loginSchema } from "../../../../lib/validations/schema";
 import { UserService } from "../../../../lib/services/user.service";
-import { generateToken } from "../../../../lib/utils/jwt";
+import { generateRefreshToken, generateToken } from "../../../../lib/utils/jwt";
 import { cookies } from "next/headers";
 import z from "zod";
+import { SessionService } from "../../../../lib/services/session.service";
 const bcrypt = require('bcrypt')
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -32,6 +33,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             email: user.email
         })
 
+        const refresh_token = generateRefreshToken()
+
         const cookieStore = await cookies()
         cookieStore.set('token', token, {
             httpOnly: true,
@@ -40,8 +43,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             path: '/'
         })
 
+        cookieStore.set('refresh_token', refresh_token, {
+            httpOnly: true,
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60,
+            path: '/'
+        })
+
+        const session = await SessionService.createSession({
+            userId: user.id,
+            refreshToken: refresh_token,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        })
+
+        console.log(session)
+
         return NextResponse.json(
-            user, {status: 201}
+             {user, session}, {status: 201}
         )
     }catch(error){
         if(error instanceof z.ZodError){

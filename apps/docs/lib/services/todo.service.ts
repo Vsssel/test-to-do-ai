@@ -1,4 +1,3 @@
-import { EStatuses } from "../db/constants/statuses";
 import { createToDoForUser, deleteTodoForUser, getTodosForUser, updateToDoForUser } from "../db/queries/todos";
 import { ToDo } from "../db/types";
 import { CreateToDoInput, createToDoSchema, UpdateToDoInput, updateToDoSchema } from "../validations/schema";
@@ -6,10 +5,6 @@ import { CreateToDoInput, createToDoSchema, UpdateToDoInput, updateToDoSchema } 
 export class TodoService {
     static async createToDo(data: CreateToDoInput): Promise<ToDo>{
         const validated = createToDoSchema.parse(data)
-
-        if(validated.statusId){
-            validated.statusId = EStatuses.OPENED
-        }
 
         const result = await createToDoForUser(validated);
 

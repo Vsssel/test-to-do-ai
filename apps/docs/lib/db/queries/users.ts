@@ -16,4 +16,11 @@ async function findUserByEmail(email: string): Promise<User[]> {
         .where(eq(UserTable.email, email))
 }
 
-export { createUser, findUserByEmail }
+async function findUserById(id: string): Promise<User[]> {
+    return await db
+        .select()
+        .from(UserTable)
+        .where(eq(UserTable.id, id))
+}
+
+export { createUser, findUserByEmail, findUserById }

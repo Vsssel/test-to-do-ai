@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from 'next/headers';
 import { createdUserSchema } from "../../../../lib/validations/schema";
 import { UserService } from "../../../../lib/services/user.service";
-import { generateToken } from "../../../../lib/utils/jwt";
+import { generateRefreshToken, generateToken } from "../../../../lib/utils/jwt";
 import z from 'zod';
+import { SessionService } from "../../../../lib/services/session.service";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
@@ -24,12 +25,28 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             email: result.email
         })
 
+        const refresh_token = generateRefreshToken()
+
         const cookieStore = await cookies()
+        
         cookieStore.set('token', token, {
             httpOnly: true,
             sameSite: 'lax',
             maxAge: 60 * 60,
             path: '/', 
+        })
+
+        cookieStore.set('refresh_token', refresh_token, {
+            httpOnly: true,
+            sameSite: 'lax',
+            maxAge:7 * 24 * 60 * 60,
+            path: '/', 
+        })
+
+        await SessionService.createSession({
+            userId: result.id,
+            refreshToken: refresh_token,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
 
         return NextResponse.json(

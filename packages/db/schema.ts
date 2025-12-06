@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
+import { pgTable, serial, integer, text, timestamp, uuid, varchar, boolean, index } from "drizzle-orm/pg-core"
 
 export const UserTable = pgTable("users", {
     id: uuid('id').primaryKey().defaultRandom(),
@@ -21,3 +21,16 @@ export const ToDoTable = pgTable("to-do", {
     statusId: integer("status_id").references(() => StatusesTable.id),
     createdAt: timestamp("createdAt").defaultNow().notNull()
 })
+
+export const SessionTable = pgTable("sessions", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => UserTable.id).notNull(),
+    refreshToken: text("refresh_token").notNull().unique(),
+    revoked: boolean("revoked").default(false).notNull(),
+    revokedAt: timestamp("revoked_at"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    expiresAt: timestamp("expiresAt").notNull()
+}, (table) => ({
+    refreshTokenIdx: index("refresh_token_idx").on(table.refreshToken),
+    userIdIdx: index("user_id_idx").on(table.userId),
+}))

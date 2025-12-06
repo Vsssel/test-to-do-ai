@@ -92,6 +92,6 @@ export async function PUT(request: NextRequest): Promise<NextResponse>{
     }
 }
 
-export async function GET(params: NextRequest): Promise<NextResponse> {
-    const
-}
+// export async function GET(params: NextRequest): Promise<NextResponse> {
+//     const
+// }

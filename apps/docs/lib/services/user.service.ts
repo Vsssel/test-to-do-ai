@@ -1,4 +1,4 @@
-import { createUser, findUserByEmail } from "../db/queries/users";
+import { createUser, findUserByEmail, findUserById } from "../db/queries/users";
 import { createdUserSchema, CreateUserInput } from "../validations/schema";
 import { User } from "../db/types";
 const bcrypt = require('bcrypt');
@@ -20,5 +20,9 @@ export class UserService {
         const result = await findUserByEmail(email)
 
         return result
+    }
+
+    static async findById(id: string): Promise<User[]>{
+        return await findUserById(id)
     }
 }

@@ -11,8 +11,12 @@ export function generateToken(payload: TokenPayload): string {
     return jwt.sign(
         payload,
         JWT_SECRET,
-        {expiresIn: '1h'}
+        {expiresIn: '30m'}
     )
+}
+
+export function generateRefreshToken(): string {
+    return crypto.randomUUID()
 }
 
 export function verifyToken(token: string): TokenPayload{
