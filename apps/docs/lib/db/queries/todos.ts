@@ -1,8 +1,6 @@
-import { db, ToDoTable, StatusesTable} from '@repo/db'
+import { db, ToDoTable} from '@repo/db'
 import { eq, and } from 'drizzle-orm'
 import { NewToDo, ToDo, UpdateToDo } from '../types';
-import { getStatusById, getStatusByTitle, getStatuses } from './status';
-import { EStatuses } from '../constants/statuses';
 
 async function getTodosForUser(userId: string, statusId?: number): Promise<ToDo[]>{
     const conditions = [eq(ToDoTable.userId, userId)];
@@ -15,6 +13,15 @@ async function getTodosForUser(userId: string, statusId?: number): Promise<ToDo[
         .select()
         .from(ToDoTable)
         .where(and(...conditions))
+}
+
+async function getToDoById(id: string): Promise<ToDo | null>{
+    const todo = await db
+        .select()
+        .from(ToDoTable)
+        .where(eq(ToDoTable.id, id))
+    
+    return todo[0] || null;
 }
 
 async function deleteTodoForUser(userId: string, todoId: string){
@@ -38,4 +45,4 @@ async function createToDoForUser(data: NewToDo){
         .returning()
 }
 
-export { getTodosForUser, deleteTodoForUser, updateToDoForUser, createToDoForUser}
+export { getTodosForUser, deleteTodoForUser, updateToDoForUser, createToDoForUser, getToDoById }

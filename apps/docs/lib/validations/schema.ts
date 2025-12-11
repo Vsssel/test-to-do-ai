@@ -8,8 +8,8 @@ export const createToDoSchema = z.object({
 })
 
 export const updateToDoSchema = z.object({
-    id: z.string().uuid('Invalid ToDo Od format'),
-    userId: z.string().uuid('Invaloid User Id format'),
+    id: z.string().uuid('Invalid ToDo Id format'),
+    userId: z.string().uuid('Invalid User Id format'),
     title: z.string().min(1).max(255).optional(),
     content: z.string().min(1).max(255).optional(),
     statusId: z.number().optional()
@@ -21,16 +21,40 @@ export const createdUserSchema = z.object({
     password: z
         .string()
         .min(8, 'Password must be at least 8 characters')
+        .max(16, 'Password is too long')
         .regex(/[A-Z]/, 'Password should have at least one uppercase letter')
 })
 
 export const loginSchema = z.object({
     email: z.string().email('Invalid email format'),
     password: z.string()
+})
 
+export const createStatusSchema = z.object({
+    userId: z.string().uuid('Invaloid User Id format'),
+    title: z.string().min(1, 'Title is required').max(255, 'Title is too long')
+})
+
+export const updateStatusSchema = z.object({
+    id: z.number('Invalid status id format'),
+    userId: z.string().uuid('Invaloid User Id format'),
+    title: z.string().min(1, 'Title is required').max(255, 'Title is too long')
+})
+
+export const createWorkspaceSchema = z.object({
+    name: z.string().min(1, 'Name is required').max(255, 'Name is too long'),
+    ownerId: z.uuid('Invalid User Id format')
+})
+
+export const updateWorkspaceSchema = z.object({
+    name: z.string().min(1, 'Name is required').max(255, 'Name is too long')
 })
 
 export type CreateToDoInput = z.infer<typeof createToDoSchema>
 export type UpdateToDoInput = z.infer<typeof updateToDoSchema>
 export type CreateUserInput = z.infer<typeof createdUserSchema>
 export type LoginInput = z.infer<typeof loginSchema>
+export type CreateStatusInput = z.infer<typeof createStatusSchema>
+export type UpdateStatusInput = z.infer<typeof updateStatusSchema>
+export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>
+export type UpdateWorkspaceInput = z.infer<typeof updateWorkspaceSchema>

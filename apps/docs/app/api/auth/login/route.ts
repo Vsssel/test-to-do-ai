@@ -56,10 +56,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
 
-        console.log(session)
-
         return NextResponse.json(
-             {user, session}, {status: 201}
+             user, {status: 201}
         )
     }catch(error){
         if(error instanceof z.ZodError){

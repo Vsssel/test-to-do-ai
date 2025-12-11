@@ -26,14 +26,16 @@ services:
 
   drizzle:
     image: node:20
+    user: "node"
     working_dir: /app
-    volumes:
-      - ./:/app
-    command: /bin/sh -c "npm install && npx drizzle-kit migrate"
-    depends_on:
-      - db
     environment:
       DATABASE_URL: postgres://admin:admin@db:5432/appdb
+      npm_config_cache: /tmp/.npm
+    volumes:
+      - ./:/app
+    command: /bin/sh -c "npm ci --unsafe-perm && npx drizzle-kit migrate"
+    depends_on:
+      - db
 
   docs:
     build:
