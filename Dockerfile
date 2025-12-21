@@ -13,6 +13,7 @@ COPY packages/typescript-config/package.json ./packages/typescript-config/
 COPY apps/docs/package.json ./apps/docs/
 COPY apps/web/package.json ./apps/web/
 
+
 # Install dependencies
 RUN npm ci
 

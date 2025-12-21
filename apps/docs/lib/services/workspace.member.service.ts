@@ -1,4 +1,4 @@
-import { createWorkspaceMember, deleteWorkspaceMember, getWorkspaceMembersByUserId, getWorkspaceMembersByWorkspaceId, updateWorkspaceMemberRole } from "../db/queries/workspaceMember";
+import { createWorkspaceMember, deleteWorkspaceMember, getWorkspaceMemberByUserId, getWorkspaceMembersById, getWorkspaceMembersByWorkspaceId, updateWorkspaceMemberRole } from "../db/queries/workspaceMember";
 import { NewWorkspaceMember, WorkspaceMember } from "../db/types";
 
 export class WorkspaceMemberService {
@@ -10,8 +10,16 @@ export class WorkspaceMemberService {
     return await getWorkspaceMembersByWorkspaceId(workspaceId)
   }
 
-  static async getWorkspaceMembersByUserId(userId: string): Promise<WorkspaceMember[]> {
-    return await getWorkspaceMembersByUserId(userId)
+  static async getWorkspaceMemberByUserId(userId: string, workspaceId: string): Promise<WorkspaceMember> {
+    const result = await getWorkspaceMemberByUserId(userId, workspaceId)
+    if(!result || !result[0]){
+      throw new Error('Workspace member not found')
+    }
+    return result[0]
+  }
+
+  static async getWorkspaceMembersById(id: string): Promise<WorkspaceMember[]> {
+    return await getWorkspaceMembersById(id)
   }
 
   static async deleteWorkspaceMember(id: string): Promise<void> {

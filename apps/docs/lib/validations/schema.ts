@@ -50,6 +50,24 @@ export const updateWorkspaceSchema = z.object({
     name: z.string().min(1, 'Name is required').max(255, 'Name is too long')
 })
 
+export const createWorkspaceRoleSchema = z.object({
+    workspaceId: z.string().uuid('Invalid Workspace Id format'),
+    roleName: z.string().min(1, 'Name is required').max(255, 'Name is too long'),
+    permissions: z.string().min(1, 'Permissions is required').max(255, 'Permissions is too long')
+})
+
+export const updateWorkspaceRoleSchema = z.object({
+    id: z.string().uuid('Invalid Role Id format'),
+    name: z.string().min(1, 'Name is required').max(255, 'Name is too long'),
+    permissions: z.string().min(1, 'Permissions is required').max(255, 'Permissions is too long')
+})
+
+export const createInvitationSchema = z.object({
+    email: z.string().email('Invalid email format'),
+    workspaceId: z.string().uuid('Invalid Workspace Id format'),
+    roleId: z.number('Invalid Role Id format')
+})
+
 export type CreateToDoInput = z.infer<typeof createToDoSchema>
 export type UpdateToDoInput = z.infer<typeof updateToDoSchema>
 export type CreateUserInput = z.infer<typeof createdUserSchema>
@@ -58,3 +76,6 @@ export type CreateStatusInput = z.infer<typeof createStatusSchema>
 export type UpdateStatusInput = z.infer<typeof updateStatusSchema>
 export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>
 export type UpdateWorkspaceInput = z.infer<typeof updateWorkspaceSchema>
+export type CreateWorkspaceRoleInput = z.infer<typeof createWorkspaceRoleSchema>
+export type UpdateWorkspaceRoleInput = z.infer<typeof updateWorkspaceRoleSchema>
+export type CreateInvitationInput = z.infer<typeof createInvitationSchema>

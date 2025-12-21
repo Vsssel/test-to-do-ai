@@ -23,12 +23,8 @@ async function getInvitationsByEmail(email: string): Promise<Invitation[]> {
     .where(eq(InvitationsTable.email, email))
 }
 
-async function updateInvitationStatus(id: string, status: string, updatedAt: Date): Promise<Invitation[]> {
-  return await db
-    .update(InvitationsTable)
-    .set({status, updatedAt})
-    .where(eq(InvitationsTable.id, id))
-    .returning()
+async function deleteInvitationByWorkplaceId(id: string): Promise<void> {
+  await db.delete(InvitationsTable).where(eq(InvitationsTable.workspaceId, id)).returning()
 }
 
-export { createInvitation, getInvitationsById, getInvitationsByEmail, updateInvitationStatus }
+export { createInvitation, getInvitationsById, getInvitationsByEmail, updateInvitationStatus, deleteInvitationByWorkplaceId }

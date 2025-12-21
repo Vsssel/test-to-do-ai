@@ -62,7 +62,6 @@ export const InvitationsTable = pgTable("invitations", {
     id: uuid("id").primaryKey().defaultRandom(),
     workspaceId: uuid("workspace_id").references(() => WorkspacesTable.id).notNull(),
     email: varchar("email", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull().unique(),
     roleId: integer("role_id").references(() => WorkSpaceRolesTable.id).notNull(),
     invitedAt: timestamp("invitedAt").defaultNow().notNull(),
     updatedAt: timestamp("acceptedAt"),

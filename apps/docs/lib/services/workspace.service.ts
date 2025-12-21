@@ -1,4 +1,7 @@
+import { deleteInvitationByWorkplaceId } from "../db/queries/invitations"
+import { deleteRoleByWorkspaceId } from "../db/queries/role"
 import { createWorkspace, deleteWorkspace, getWorkspaceById, getWorkspacesByUserId, updateWorkspace } from "../db/queries/workspace"
+import { deleteWorkspaceMemberByWorkspaceId } from "../db/queries/workspaceMember"
 import { NewWorkspace, Workspace } from "../db/types"
 import { WORKSPACE_PERMISSIONS, WORKSPACE_ROLES } from "../values"
 import { WorkspaceMemberService } from "./workspace.member.service"
@@ -13,17 +16,17 @@ export class WorkspaceService {
     await WorkspaceRolesService.createRole({
       workspaceId: result[0].id,
       roleName: WORKSPACE_ROLES.OWNER,
-      permissions: WORKSPACE_PERMISSIONS.CREATE_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.READ_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.UPDATE_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.DELETE_WORKSPACE
+      permissions: WORKSPACE_PERMISSIONS.CREATE_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.READ_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.UPDATE_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.DELETE_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.CREATE_ROLE + ',' + WORKSPACE_PERMISSIONS.READ_ROLE + ',' + WORKSPACE_PERMISSIONS.UPDATE_ROLE + ',' + WORKSPACE_PERMISSIONS.DELETE_ROLE + ',' + WORKSPACE_PERMISSIONS.CREATE_INVITATION + ',' + WORKSPACE_PERMISSIONS.READ_INVITATION + ',' + WORKSPACE_PERMISSIONS.UPDATE_INVITATION + ',' + WORKSPACE_PERMISSIONS.DELETE_INVITATION + ',' + WORKSPACE_PERMISSIONS.DELETE_MEMBER
     })
     await WorkspaceRolesService.createRole({
       workspaceId: result[0].id,
       roleName: WORKSPACE_ROLES.EDITOR,
-      permissions: WORKSPACE_PERMISSIONS.READ_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.UPDATE_WORKSPACE
+      permissions: WORKSPACE_PERMISSIONS.READ_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.UPDATE_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.READ_ROLE + ',' + WORKSPACE_PERMISSIONS.CREATE_INVITATION + ',' + WORKSPACE_PERMISSIONS.READ_INVITATION + ',' + WORKSPACE_PERMISSIONS.UPDATE_INVITATION
     })
     await WorkspaceRolesService.createRole({
       workspaceId: result[0].id,
       roleName: WORKSPACE_ROLES.VIEWER,
-      permissions: WORKSPACE_PERMISSIONS.READ_WORKSPACE
+      permissions: WORKSPACE_PERMISSIONS.READ_WORKSPACE + ',' + WORKSPACE_PERMISSIONS.READ_ROLE
     })
 
     const ownerRole = await WorkspaceRolesService.getRoleByName(WORKSPACE_ROLES.OWNER, result[0].id)
@@ -38,8 +41,12 @@ export class WorkspaceService {
     return result
   }
 
-  static async getWorkspaceById(id: string): Promise<Workspace[]> {
-    return await getWorkspaceById(id)
+  static async getWorkspaceById(id: string): Promise<Workspace | null> {
+    const result = await getWorkspaceById(id)
+    if(!result || !result[0]){
+      return null
+    }
+    return result[0]
   }
 
   static async getWorkspacesByUserId(userId: string): Promise<Workspace[]> {
@@ -47,6 +54,9 @@ export class WorkspaceService {
   }
 
   static async deleteWorkspace(id: string): Promise<void> {
+    await deleteWorkspaceMemberByWorkspaceId(id)
+    await deleteRoleByWorkspaceId(id)
+    await deleteInvitationByWorkplaceId(id)
     await deleteWorkspace(id)
   }
 

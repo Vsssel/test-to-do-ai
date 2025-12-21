@@ -1,6 +1,5 @@
 import { InvitationsTable, SessionTable, StatusesTable, ToDoTable, UserTable, WorkspaceMembersTable, WorkSpaceRolesTable, WorkspacesTable } from '@repo/db'
 import { InferSelectModel, InferInsertModel } from 'drizzle-orm'
-import { Infer } from 'zod'
 
 type User = InferSelectModel<typeof UserTable>
 type NewUser = InferInsertModel<typeof UserTable>

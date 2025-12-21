@@ -11,19 +11,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-
   drizzle:
     image: node:20
     user: "node"
@@ -36,6 +23,26 @@ services:
     command: /bin/sh -c "npm ci --unsafe-perm && npx drizzle-kit migrate"
     depends_on:
       - db
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   docs:
     build:
@@ -51,9 +58,50 @@ services:
       - /app/apps/docs/.next
     depends_on:
       - db
+      - redis
     environment:
       DATABASE_URL: postgres://admin:admin@db:5432/appdb
       NODE_ENV: development
+      KAFKA_BROKERS: kafka:9092
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SMTP_HOST: smtp.mailtrap.io
+      SMTP_PORT: 2525
+      SMTP_USER: login
+      SMTP_PASS: pass
+      EMAIL_FROM: 220107087@stu.sdu.edu.kz
+
+  web: 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web-app
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/apps/web/.next
+    depends_on:
+      - docs
+  email-worker:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: node apps/docs/lib/messaging/email.worker.js
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: asselonay@gmail.com
+      SMTP_PASS: jxnoadexfcepevaq
+
 
 volumes:
   postgres_data:
+  redis_data:

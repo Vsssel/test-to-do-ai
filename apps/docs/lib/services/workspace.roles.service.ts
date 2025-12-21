@@ -1,5 +1,6 @@
 import { createRole, deleteRole, getRoleById, getRoleByName, getRolesByWorkspaceId, updateRoleName } from "../db/queries/role"
 import { NewWorkSpaceRoles, Role } from "../db/types"
+import { UpdateWorkspaceRoleInput } from "../validations/schema"
 
 export class WorkspaceRolesService {
   static async createRole(data: NewWorkSpaceRoles): Promise<Role[]> {
@@ -22,7 +23,7 @@ export class WorkspaceRolesService {
     await deleteRole(id)
   }
 
-  static async updateRoleName(id: number, roleName: string): Promise<Role[]> {
-    return await updateRoleName(id, roleName)
+  static async updateRole(id: number, data: UpdateWorkspaceRoleInput): Promise<Role[]> {
+    return await updateRoleName(id, data)
   }
 } 

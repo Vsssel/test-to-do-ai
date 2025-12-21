@@ -24,7 +24,9 @@ async function getWorkspacesByUserId(userId: string): Promise<Workspace[]> {
 }
 
 async function deleteWorkspace(id: string): Promise<void> {
-  await db.delete(WorkspacesTable).where(eq(WorkspacesTable.id, id)).returning()
+  await db
+    .delete(WorkspacesTable)
+    .where(eq(WorkspacesTable.id, id))
 }
 
 async function updateWorkspace(id: string, name: string): Promise<Workspace[]> {

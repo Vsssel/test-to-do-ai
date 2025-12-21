@@ -3,7 +3,6 @@ import { createWorkspaceSchema } from "../../../lib/validations/schema";
 import { authenticateRequest } from "../../../lib/middleware/auth";
 import { WorkspaceService } from "../../../lib/services/workspace.service";
 import z from "zod";
-import { WorkspaceMemberService } from "../../../lib/services/workspace.member.service";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
@@ -37,19 +36,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             )
         }
 
-        const member = await WorkspaceMemberService.createWorkspaceMember({
-            workspaceId: result[0].id,
-            userId: user?.userId,
-            roleId: 1
-        })
-
-        if(!member || !member[0]){
-            return NextResponse.json(
-                { error: 'Failed to create workspace member' },
-                { status: 500 }
-            )
-        }
-
         return NextResponse.json(
             result, { status: 201 }
         )
@@ -58,6 +44,56 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             return NextResponse.json(
                 { error: 'Validation Error', details: error.issues },
                 { status: 400 }
+            )
+        }
+
+        if(error instanceof Error){
+            return NextResponse.json(
+                { error: 'Internal Server Error', details: error.message },
+                { status: 500 }
+            )
+        }
+
+        return NextResponse.json(
+            { error: 'Internal Server Error' },
+            { status: 500 }
+        )
+    }
+}
+
+export async function GET(request: NextRequest): Promise<NextResponse> {
+    try{
+        const authResult = await authenticateRequest(request)
+        if ('error' in authResult) {
+            return NextResponse.json(
+                { error: authResult.error.statusText || 'Unauthorized' },
+                { status: authResult.error.status || 401 }
+            )
+        }
+
+        const { user } = authResult
+        if(!user?.userId){
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        const result = await WorkspaceService.getWorkspacesByUserId(user?.userId)
+
+        if(!result || !result){
+            return NextResponse.json(
+                { error: 'Failed to get workspaces' },
+                { status: 500 }
+            )
+        }
+
+        return NextResponse.json(result, { status: 200 })
+    }catch(error){
+        if(error instanceof z.ZodError){
+            return NextResponse.json(
+                { error: 'Internal Server Error', details: error.message },
+                { status: 500 }
             )
         }
 
