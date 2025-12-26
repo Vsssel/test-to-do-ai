@@ -1,5 +1,5 @@
 import { db, StatusesTable } from "@repo/db";
-import { Status } from "../types";
+import { NewStatus, Status } from "../types";
 import { eq } from "drizzle-orm";
 import { CreateStatusInput, UpdateStatusInput } from "../../validations/schema";
 
@@ -32,7 +32,7 @@ async function getStatusesByUserId(userId: string): Promise<Status[]> {
         .where(eq(StatusesTable.userId, userId))
 }
 
-async function createStatus(status: CreateStatusInput): Promise<Status[]> {
+async function createStatus(status: NewStatus): Promise<Status[]> {
     return await db.insert(StatusesTable).values(status).returning()
 }
 
@@ -44,4 +44,10 @@ async function deleteStatus(id: number): Promise<void> {
     await db.delete(StatusesTable).where(eq(StatusesTable.id, id)).returning()
 }
 
-export { getStatuses, getStatusById, getStatusByTitle, createStatus, updateStatus, deleteStatus, getStatusesByUserId }
+async function getStatusesByWorkspaceId(workspaceId: string): Promise<Status[]> {
+    return await db
+        .select()
+        .from(StatusesTable)
+        .where(eq(StatusesTable.workspaceId, workspaceId))
+}
+export { getStatuses, getStatusById, getStatusByTitle, createStatus, updateStatus, deleteStatus, getStatusesByUserId, getStatusesByWorkspaceId }

@@ -1,8 +1,12 @@
-import { createStatus, deleteStatus, getStatusById, getStatusesByUserId, getStatusByTitle, getStatuses, updateStatus } from "../db/queries/status";
-import { Status } from "../db/types";
+import { createStatus, deleteStatus, getStatusById, getStatusesByUserId, getStatusByTitle, getStatuses, updateStatus, getStatusesByWorkspaceId } from "../db/queries/status";
+import { NewStatus, Status } from "../db/types";
 import { CreateStatusInput, UpdateStatusInput } from "../validations/schema";
 
 export class StatusesService {
+    static async getStatusesByWorkspaceId(workspaceId: string): Promise<Status[]> {
+        return await getStatusesByWorkspaceId(workspaceId)
+    }
+
     static async getStatuses(): Promise<Status[]> {
         return await getStatuses()
     }
@@ -19,7 +23,7 @@ export class StatusesService {
         return await getStatusesByUserId(userId)
     }
 
-    static async createStatus(status: CreateStatusInput): Promise<Status[]> {
+    static async createStatus(status: NewStatus): Promise<Status[]> {
         return await createStatus(status)
     }
 

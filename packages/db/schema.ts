@@ -1,25 +1,11 @@
-import { pgTable, serial, integer, text, timestamp, uuid, varchar, boolean, index } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm"
+import { pgTable, serial, integer, text, timestamp, uuid, varchar, boolean, index, check } from "drizzle-orm/pg-core"
 
 export const UserTable = pgTable("users", {
     id: uuid('id').primaryKey().defaultRandom(),
     name: varchar("name", { length: 255 }).notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     passwordHash: text("password_hash").notNull(),
-    createdAt: timestamp("createdAt").defaultNow().notNull()
-})
-
-export const StatusesTable = pgTable("statuses", {
-    id: serial("id").primaryKey(),
-    title: varchar("title", { length: 255}).notNull(),
-    userId: uuid("user_id").references(() => UserTable.id).notNull()
-})
-
-export const ToDoTable = pgTable("todos", {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id").references(() => UserTable.id).notNull(),
-    title: varchar("title", { length: 255 }).notNull(),
-    content: text("content"),
-    statusId: integer("status_id").references(() => StatusesTable.id),
     createdAt: timestamp("createdAt").defaultNow().notNull()
 })
 
@@ -62,8 +48,37 @@ export const InvitationsTable = pgTable("invitations", {
     id: uuid("id").primaryKey().defaultRandom(),
     workspaceId: uuid("workspace_id").references(() => WorkspacesTable.id).notNull(),
     email: varchar("email", { length: 255 }).notNull(),
+    token: varchar("token", { length: 255 }).notNull(),
     roleId: integer("role_id").references(() => WorkSpaceRolesTable.id).notNull(),
     invitedAt: timestamp("invitedAt").defaultNow().notNull(),
-    updatedAt: timestamp("acceptedAt"),
+    acceptedAt: timestamp("acceptedAt"),
+    expiredAt: timestamp("expiredAt").notNull(),
     status: varchar("status", { length: 255 }).notNull().default("pending")
 })
+
+export const StatusesTable = pgTable("statuses", {
+    id: serial("id").primaryKey(),
+    title: varchar("title", { length: 255}).notNull(),
+    userId: uuid("user_id").references(() => UserTable.id),
+    workspaceId: uuid("workspace_id").references(() => WorkspacesTable.id)
+}, (table) => ({
+    atLeastOneOwner : check(
+        "status_user_or_workspace_required",
+        sql`((${table.userId} IS NOT NULL) OR (${table.workspaceId} IS NOT NULL))`
+    )
+}))
+
+export const ToDoTable = pgTable("todos", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => UserTable.id),
+    workspaceId: uuid("workspace_id").references(() => WorkspacesTable.id),
+    title: varchar("title", { length: 255 }).notNull(),
+    content: text("content"),
+    statusId: integer("status_id").references(() => StatusesTable.id),
+    createdAt: timestamp("createdAt").defaultNow().notNull()
+}, (table) => ({
+    atLeastOneOwner : check(
+        "todo_user_or_workspace_required",
+        sql`((${table.userId} IS NOT NULL) OR (${table.workspaceId} IS NOT NULL))`
+    )
+}))

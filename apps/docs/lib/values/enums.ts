@@ -18,4 +18,12 @@ export const WORKSPACE_PERMISSIONS = {
     UPDATE_INVITATION: 'update:invitation',
     DELETE_INVITATION: 'delete:invitation',
     DELETE_MEMBER: 'delete:member',
-  }
+    CREATE_STATUS: 'create:status',
+    READ_STATUS: 'read:status',
+    UPDATE_STATUS: 'update:status',
+    DELETE_STATUS: 'delete:status',
+    CREATE_TODO: 'create:todo',
+    READ_TODO: 'read:todo',
+    UPDATE_TODO: 'update:todo',
+    DELETE_TODO: 'delete:todo',
+}

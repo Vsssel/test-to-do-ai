@@ -1,15 +1,14 @@
 import { z } from 'zod'
 
 export const createToDoSchema = z.object({
-    userId: z.string().uuid('Invaloid User Id format'),
+    userId: z.string().uuid('Invaloid User Id format').optional(),
+    workspaceId: z.string().uuid('Invalid Workspace Id format').optional(),
     title: z.string().min(1, 'Title is required').max(255, 'Title too long'),
     content: z.string().optional(),
     statusId: z.number().optional()
 })
 
 export const updateToDoSchema = z.object({
-    id: z.string().uuid('Invalid ToDo Id format'),
-    userId: z.string().uuid('Invalid User Id format'),
     title: z.string().min(1).max(255).optional(),
     content: z.string().min(1).max(255).optional(),
     statusId: z.number().optional()
@@ -31,13 +30,14 @@ export const loginSchema = z.object({
 })
 
 export const createStatusSchema = z.object({
-    userId: z.string().uuid('Invaloid User Id format'),
+    userId: z.string().uuid('Invaloid User Id format').optional(),
+    workspaceId: z.string().uuid('Invalid Workspace Id format').optional(),
     title: z.string().min(1, 'Title is required').max(255, 'Title is too long')
 })
 
 export const updateStatusSchema = z.object({
     id: z.number('Invalid status id format'),
-    userId: z.string().uuid('Invaloid User Id format'),
+    workspaceId: z.string('Invalid workspace id format').optional(),
     title: z.string().min(1, 'Title is required').max(255, 'Title is too long')
 })
 
@@ -65,7 +65,13 @@ export const updateWorkspaceRoleSchema = z.object({
 export const createInvitationSchema = z.object({
     email: z.string().email('Invalid email format'),
     workspaceId: z.string().uuid('Invalid Workspace Id format'),
-    roleId: z.number('Invalid Role Id format')
+    roleId: z.number('Invalid Role Id format'),
+    token: z.string().min(1, 'Token is required').max(255, 'Token is too long'),
+    expiredAt: z.date('Invalid expired at format')
+})
+
+export const acceptInvitationSchema = z.object({
+    status: z.enum(['accepted', 'rejected']).default('accepted')
 })
 
 export type CreateToDoInput = z.infer<typeof createToDoSchema>

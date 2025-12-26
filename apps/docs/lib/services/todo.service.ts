@@ -1,4 +1,4 @@
-import { createToDoForUser, deleteTodoForUser, getToDoById, getTodosForUser, updateToDoForUser } from "../db/queries/todos";
+import { createToDo, deleteTodo, getToDoById, getTodos, updateToDoById  } from "../db/queries/todos";
 import { ToDo } from "../db/types";
 import { CreateToDoInput, createToDoSchema, UpdateToDoInput, updateToDoSchema } from "../validations/schema";
 
@@ -6,7 +6,7 @@ export class TodoService {
     static async createToDo(data: CreateToDoInput): Promise<ToDo>{
         const validated = createToDoSchema.parse(data)
 
-        const result = await createToDoForUser(validated);
+        const result = await createToDo(validated);
 
         if (!result || !result[0]) {
             throw new Error("Failed to create todo");
@@ -16,10 +16,10 @@ export class TodoService {
     }
 
 
-    static async updateToDo(data: UpdateToDoInput): Promise<ToDo>{
+    static async updateToDo(id: string, data: UpdateToDoInput): Promise<ToDo>{
         const validated = updateToDoSchema.parse(data)
 
-        const result = await updateToDoForUser(validated)
+        const result = await updateToDoById(id, validated)
 
         if(!result || !result[0]){
             throw new Error('Failed to update todo')
@@ -34,18 +34,12 @@ export class TodoService {
         return todo;
     }
 
-    static async getToDosByUserId(userId: string, statusId?: number): Promise<ToDo[]>{
-        const result = await getTodosForUser(userId, statusId)
-
-        if(!result || !result[0]){
-            throw new Error('Failed to fetch todos')
-        }
-
-        return result
+    static async getToDos(statusId?: number, workspaceId?: string, userId?: string): Promise<ToDo[]>{
+        return await getTodos(userId, statusId, workspaceId)
     }
 
 
-    static async deleteTodo(userId: string, todoId: string): Promise<void>{
-        await deleteTodoForUser(userId, todoId)
+    static async deleteTodo(todoId: string, userId?: string, workspaceId?: string): Promise<void>{
+        await deleteTodo(todoId, userId, workspaceId)
     }
 }

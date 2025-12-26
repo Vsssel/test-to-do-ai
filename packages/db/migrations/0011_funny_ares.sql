@@ -1,0 +1,1 @@
+ALTER TABLE "invitations" ALTER COLUMN "expiredAt" SET NOT NULL;

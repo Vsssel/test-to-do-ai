@@ -3,6 +3,9 @@ import { authenticateRequest } from "../../../../lib/middleware/auth";
 import { updateStatusSchema } from "../../../../lib/validations/schema";
 import { StatusesService } from "../../../../lib/services/statuses.service";
 import z from "zod";
+import { WORKSPACE_PERMISSIONS } from "../../../../lib/values";
+import { WorkspaceRolesService } from "../../../../lib/services/workspace.roles.service";
+import { WorkspaceMemberService } from "../../../../lib/services/workspace.member.service";
 
 export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse> {
     try{
@@ -19,6 +22,13 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
 
         const { user } = authResult
 
+        if(!user?.userId){
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
         const data = { 
           ...body, 
           id: Number(id),
@@ -34,12 +44,24 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
             )
         }
 
-        if(existingStatus[0].userId !== user?.userId){
+        if(existingStatus[0].userId !== user?.userId && existingStatus[0].workspaceId !== validated.workspaceId){
             return NextResponse.json(
                 { error: 'Forbidden' },
                 { status: 403 }
             )
         }
+
+        if(validated.workspaceId){
+            const workspaceMember = await WorkspaceMemberService.getWorkspaceMemberByUserId(user?.userId, validated.workspaceId)
+            const roles = await WorkspaceRolesService.getRolesByWorkspaceId(validated.workspaceId)
+            if(!workspaceMember || workspaceMember.userId !== user?.userId || roles.some(role => role.id === workspaceMember.roleId && !role.permissions.includes(WORKSPACE_PERMISSIONS.UPDATE_STATUS))){
+                return NextResponse.json(
+                    { error: 'Forbidden' },
+                    { status: 403 }
+                )
+            }
+        }
+
         const result = await StatusesService.updateStatus(validated)
 
         if(!result || !result[0]){

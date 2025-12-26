@@ -1,12 +1,21 @@
 import { db, ToDoTable} from '@repo/db'
 import { eq, and } from 'drizzle-orm'
-import { NewToDo, ToDo, UpdateToDo } from '../types';
+import { NewToDo, ToDo } from '../types';
+import { UpdateToDoInput } from '../../validations/schema';
 
-async function getTodosForUser(userId: string, statusId?: number): Promise<ToDo[]>{
-    const conditions = [eq(ToDoTable.userId, userId)];
+async function getTodos(userId?: string, statusId?: number, workspaceId?: string): Promise<ToDo[]>{
+    const conditions = [];
     
     if (statusId) {
         conditions.push(eq(ToDoTable.statusId, statusId));
+    }
+
+    if (workspaceId) {
+        conditions.push(eq(ToDoTable.workspaceId, workspaceId));
+    }
+
+    if(userId) {
+        conditions.push(eq(ToDoTable.userId, userId));
     }
     
     return await db
@@ -24,25 +33,32 @@ async function getToDoById(id: string): Promise<ToDo | null>{
     return todo[0] || null;
 }
 
-async function deleteTodoForUser(userId: string, todoId: string){
+async function deleteTodo(todoId: string, userId?: string, workspaceId?: string){
+    const conditions = [];
+    if(userId) {
+        conditions.push(eq(ToDoTable.userId, userId));
+    }
+    if(workspaceId) {
+        conditions.push(eq(ToDoTable.workspaceId, workspaceId));
+    }
     return await db
         .delete(ToDoTable)
-        .where(and(eq(ToDoTable.userId, userId), eq(ToDoTable.id, todoId)))
+        .where(and(...conditions, eq(ToDoTable.id, todoId)))
 }
 
-async function updateToDoForUser(data: UpdateToDo) {    
+async function updateToDoById(id: string ,data: UpdateToDoInput) {    
     return await db 
         .update(ToDoTable)
         .set(data)
-        .where(and(eq(ToDoTable.id, data.id), eq(ToDoTable.userId, data.userId)))
+        .where(and(eq(ToDoTable.id, id)))
         .returning()
 }
 
-async function createToDoForUser(data: NewToDo){
+async function createToDo(data: NewToDo){
     return await db
         .insert(ToDoTable)
         .values(data)
         .returning()
 }
 
-export { getTodosForUser, deleteTodoForUser, updateToDoForUser, createToDoForUser, getToDoById }
+export { getTodos, deleteTodo, updateToDoById, createToDo, getToDoById }

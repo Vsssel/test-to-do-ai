@@ -1,0 +1,4 @@
+ALTER TABLE "statuses" ADD COLUMN "workspace_id" uuid;--> statement-breakpoint
+ALTER TABLE "statuses" ADD CONSTRAINT "statuses_workspace_id_workspaces_id_fk" FOREIGN KEY ("workspace_id") REFERENCES "public"."workspaces"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "statuses" ADD CONSTRAINT "status_user_or_workspace_required" CHECK ((("statuses"."user_id" IS NOT NULL) OR ("statuses"."workspace_id" IS NOT NULL)));--> statement-breakpoint
+ALTER TABLE "todos" ADD CONSTRAINT "todo_user_or_workspace_required" CHECK ((("todos"."user_id" IS NOT NULL) OR ("todos"."workspace_id" IS NOT NULL)));

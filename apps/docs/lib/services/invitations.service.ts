@@ -1,6 +1,8 @@
-import { createInvitation, deleteInvitationByWorkplaceId, getInvitationsByEmail, getInvitationsById, updateInvitationStatus } from "../db/queries/invitations"
+import { createInvitation, deleteInvitationByWorkplaceId, getInvitationsByEmail, getInvitationsById, getInvitationByToken, updateInvitationStatus } from "../db/queries/invitations"
 import { Invitation, NewInvitation } from "../db/types"
 import { emailQueue } from "../messaging/queue"
+import { UserService } from "./user.service"
+import { WorkspaceMemberService } from "./workspace.member.service"
 
 export class InvitationsService {
   static async createInvitation(data: NewInvitation): Promise<Invitation[]> {
@@ -23,6 +25,14 @@ export class InvitationsService {
       console.error('Error creating invitation:', error)
       throw error
     }
+  }
+
+  static async getInvitationByToken(token: string): Promise<Invitation[]> {
+    return await getInvitationByToken(token)
+  }
+
+  static async updateInvitationStatus(id: string, status: string, acceptedAt: Date): Promise<void> {
+    await updateInvitationStatus(id, status, acceptedAt)
   }
 
   static async getInvitationsById(workspaceId: string): Promise<Invitation[]> {
