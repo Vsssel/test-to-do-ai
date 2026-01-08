@@ -7,6 +7,44 @@ import { WORKSPACE_PERMISSIONS } from "../../../../lib/values";
 import { WorkspaceRolesService } from "../../../../lib/services/workspace.roles.service";
 import { WorkspaceMemberService } from "../../../../lib/services/workspace.member.service";
 
+/**
+ * @swagger
+ * /api/status/{id}:
+ *   put:
+ *     tags:
+ *       - Status
+ *     summary: Update status
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               workspaceId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Updated status
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ */
 export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse> {
     try{
         const { id } = await context.params;

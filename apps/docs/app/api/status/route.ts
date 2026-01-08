@@ -7,6 +7,58 @@ import { WorkspaceMemberService } from "../../../lib/services/workspace.member.s
 import { WorkspaceRolesService } from "../../../lib/services/workspace.roles.service";
 import { WORKSPACE_PERMISSIONS } from "../../../lib/values/enums";
 
+/**
+ * @swagger
+ * /api/status:
+ *   get:
+ *     tags:
+ *       - Status
+ *     summary: List statuses
+ *     description: Returns statuses for the authenticated user. If workspaceId is provided, checks workspace permissions.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: workspaceId
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of statuses
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *   post:
+ *     tags:
+ *       - Status
+ *     summary: Create status
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               workspaceId:
+ *                 type: string
+ *             required:
+ *               - name
+ *     responses:
+ *       201:
+ *         description: Created status
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 export async function POST(request: NextRequest): Promise<NextResponse>{
     try{
         const data = await request.json()

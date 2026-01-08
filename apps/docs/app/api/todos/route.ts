@@ -7,6 +7,65 @@ import { WorkspaceMemberService } from "../../../lib/services/workspace.member.s
 import { WorkspaceRolesService } from "../../../lib/services/workspace.roles.service";
 import { WORKSPACE_PERMISSIONS } from "../../../lib/values";
 
+/**
+ * @swagger
+ * /api/todos:
+ *   get:
+ *     tags:
+ *       - Todos
+ *     summary: List todos
+ *     description: Returns todos for the authenticated user. Optionally filter by statusId and/or workspaceId.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: statusId
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Filter todos by status id
+ *       - in: query
+ *         name: workspaceId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Workspace id (when present, checks permissions)
+ *     responses:
+ *       200:
+ *         description: List of todos
+ *   post:
+ *     tags:
+ *       - Todos
+ *     summary: Create todo
+ *     description: Creates a todo for the authenticated user (or for a workspace if workspaceId is provided and permitted).
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               statusId:
+ *                 type: integer
+ *               workspaceId:
+ *                 type: string
+ *             required:
+ *               - title
+ *               - statusId
+ *     responses:
+ *       201:
+ *         description: Created todo
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
         const data = await request.json()

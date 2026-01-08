@@ -2,6 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { SessionService } from "../../../../lib/services/session.service";
 import { cookies } from "next/headers";
 
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Logout
+ *     description: Revokes the current refresh token session (from cookie) and clears auth cookies.
+ *     responses:
+ *       200:
+ *         description: Logged out
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Refresh token not found
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
         const refresh_token = request.cookies.get('refresh_token')?.value

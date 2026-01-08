@@ -45,11 +45,18 @@ services:
   docs:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: apps/docs/Dockerfile
     container_name: docs-app
     restart: always
     ports:
       - "3001:3001"
+    command: >
+      /bin/sh -c "LOCK_HASH=$$(sha256sum package-lock.json | cut -d ' ' -f1);
+      INSTALLED_HASH=$$(cat node_modules/.install-hash 2>/dev/null || true);
+      if [ \"$$LOCK_HASH\" != \"$$INSTALLED_HASH\" ]; then
+        npm ci --unsafe-perm && echo \"$$LOCK_HASH\" > node_modules/.install-hash;
+      fi;
+      npm run dev --workspace=apps/docs"
     volumes:
       - ./:/app
       - /app/node_modules
@@ -63,11 +70,18 @@ services:
   web: 
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: apps/web/Dockerfile
     container_name: web-app
     restart: always
     ports:
       - "3000:3000"
+    command: >
+      /bin/sh -c "LOCK_HASH=$$(sha256sum package-lock.json | cut -d ' ' -f1);
+      INSTALLED_HASH=$$(cat node_modules/.install-hash 2>/dev/null || true);
+      if [ \"$$LOCK_HASH\" != \"$$INSTALLED_HASH\" ]; then
+        npm ci --unsafe-perm && echo \"$$LOCK_HASH\" > node_modules/.install-hash;
+      fi;
+      npm run dev --workspace=apps/web"
     volumes:
       - ./:/app
       - /app/node_modules

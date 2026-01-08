@@ -4,6 +4,22 @@ import { generateRefreshToken, generateToken } from "../../../../lib/utils/jwt";
 import { cookies } from "next/headers";
 import { UserService } from "../../../../lib/services/user.service";
 
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Refresh access token
+ *     description: Uses refresh_token cookie to rotate tokens and set new auth cookies.
+ *     responses:
+ *       200:
+ *         description: Refreshed
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Refresh token / user not found
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
         const refresh_token = request.cookies.get('refresh_token')?.value

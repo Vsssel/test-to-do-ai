@@ -7,6 +7,86 @@ import { updateWorkspaceSchema } from "../../../../lib/validations/schema"
 import { WorkspaceRolesService } from "../../../../lib/services/workspace.roles.service"
 import { WORKSPACE_PERMISSIONS } from "../../../../lib/values"
 
+/**
+ * @swagger
+ * /api/workspace/{id}:
+ *   get:
+ *     tags:
+ *       - Workspace
+ *     summary: Get workspace by id
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Workspace
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ *   put:
+ *     tags:
+ *       - Workspace
+ *     summary: Update workspace
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *             required:
+ *               - name
+ *     responses:
+ *       200:
+ *         description: Updated workspace
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ *   delete:
+ *     tags:
+ *       - Workspace
+ *     summary: Delete workspace
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Deleted
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ */
 export async function GET(request: NextRequest, context: { params: { id: string } }): Promise<NextResponse> {
     try{
         const { id } = await context.params

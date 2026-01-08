@@ -7,6 +7,107 @@ import { InvitationsService } from "../../../../../lib/services/invitations.serv
 import { acceptInvitationSchema, createInvitationSchema } from "../../../../../lib/validations/schema"
 import z from "zod"
 
+/**
+ * @swagger
+ * /api/workspace/{id}/invitations:
+ *   post:
+ *     tags:
+ *       - Workspace Invitations
+ *     summary: Create invitation
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               roleId:
+ *                 type: integer
+ *             required:
+ *               - email
+ *               - roleId
+ *     responses:
+ *       201:
+ *         description: Created invitation
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *   get:
+ *     tags:
+ *       - Workspace Invitations
+ *     summary: Get invitation by token
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Invitation
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Not found / expired / already used
+ *   put:
+ *     tags:
+ *       - Workspace Invitations
+ *     summary: Accept invitation (by token)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [accepted, declined]
+ *             required:
+ *               - status
+ *     responses:
+ *       200:
+ *         description: Invitation accepted
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Not found / expired / already used
+ */
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse> {
   try{
     const { id } = await context.params

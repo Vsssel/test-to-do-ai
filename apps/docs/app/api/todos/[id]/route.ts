@@ -8,6 +8,88 @@ import { WorkspaceMemberService } from "../../../../lib/services/workspace.membe
 import { WorkspaceRolesService } from "../../../../lib/services/workspace.roles.service";
 import { WORKSPACE_PERMISSIONS } from "../../../../lib/values";
 
+/**
+ * @swagger
+ * /api/todos/{id}:
+ *   get:
+ *     tags:
+ *       - Todos
+ *     summary: Get todo by id
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Todo
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ *   put:
+ *     tags:
+ *       - Todos
+ *     summary: Update todo
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               statusId:
+ *                 type: integer
+ *               workspaceId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Updated todo
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ *   delete:
+ *     tags:
+ *       - Todos
+ *     summary: Delete todo
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Deleted
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ */
 export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }>}): Promise<NextResponse>{
     try{
         const { id } =  await context.params;

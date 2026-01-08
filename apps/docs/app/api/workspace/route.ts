@@ -4,6 +4,45 @@ import { authenticateRequest } from "../../../lib/middleware/auth";
 import { WorkspaceService } from "../../../lib/services/workspace.service";
 import z from "zod";
 
+/**
+ * @swagger
+ * /api/workspace:
+ *   get:
+ *     tags:
+ *       - Workspace
+ *     summary: List user workspaces
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Workspaces
+ *       401:
+ *         description: Unauthorized
+ *   post:
+ *     tags:
+ *       - Workspace
+ *     summary: Create workspace
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *             required:
+ *               - name
+ *     responses:
+ *       201:
+ *         description: Created workspace
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
         const data = await request.json()

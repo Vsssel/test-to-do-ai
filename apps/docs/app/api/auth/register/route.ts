@@ -6,6 +6,39 @@ import { generateRefreshToken, generateToken } from "../../../../lib/utils/jwt";
 import z from 'zod';
 import { SessionService } from "../../../../lib/services/session.service";
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Register
+ *     description: Creates a new user and sets auth cookies (token + refresh_token).
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *     responses:
+ *       201:
+ *         description: Registered
+ *       400:
+ *         description: Validation error
+ *       409:
+ *         description: Conflict (email exists)
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
         const body = await request.json()

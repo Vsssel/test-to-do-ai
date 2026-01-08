@@ -7,6 +7,36 @@ import z from "zod";
 import { SessionService } from "../../../../lib/services/session.service";
 const bcrypt = require('bcrypt')
 
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Login
+ *     description: Authenticates the user and sets auth cookies (token + refresh_token).
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       201:
+ *         description: Logged in
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Invalid credentials
+ */
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try{
         const data = await request.json()

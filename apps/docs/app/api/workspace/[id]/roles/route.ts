@@ -6,6 +6,63 @@ import { WorkspaceMemberService } from "../../../../../lib/services/workspace.me
 import { WORKSPACE_PERMISSIONS } from "../../../../../lib/values"
 import { createWorkspaceRoleSchema } from "../../../../../lib/validations/schema"
 
+/**
+ * @swagger
+ * /api/workspace/{id}/roles:
+ *   get:
+ *     tags:
+ *       - Workspace Roles
+ *     summary: List workspace roles
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Roles
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *   post:
+ *     tags:
+ *       - Workspace Roles
+ *     summary: Create workspace role
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               roleName:
+ *                 type: string
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       201:
+ *         description: Created role
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }): Promise<NextResponse> {
     try{
         const { id } = await context.params

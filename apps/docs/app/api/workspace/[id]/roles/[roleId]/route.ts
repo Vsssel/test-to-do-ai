@@ -5,6 +5,75 @@ import z from "zod";
 import { WorkspaceMemberService } from "../../../../../../lib/services/workspace.member.service";
 import { WORKSPACE_PERMISSIONS, WORKSPACE_ROLES } from "../../../../../../lib/values";
 
+/**
+ * @swagger
+ * /api/workspace/{id}/roles/{roleId}:
+ *   put:
+ *     tags:
+ *       - Workspace Roles
+ *     summary: Update workspace role
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               roleName:
+ *                 type: string
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Updated role
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ *   delete:
+ *     tags:
+ *       - Workspace Roles
+ *     summary: Delete workspace role
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Deleted role
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ */
 export async function PUT(
     request: NextRequest,
     context: { params: Promise<{ id: string; roleId: string }> }
